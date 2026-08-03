@@ -1,0 +1,84 @@
+{
+  "folders": [
+    {
+      "name": "Servicios HK",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "emmet.includeLanguages": {
+      "javascript": "javascriptreact"
+    },
+    "css.validate": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "workbench.colorTheme": "Dark Modern",
+    "terminal.integrated.defaultProfile.windows": "Git Bash"
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "Supabase.vscode-supabase-extension",
+      "ms-vscode.vscode-node-azure-pack",
+      "formulahendry.auto-rename-tag",
+      "christian-kohler.path-intellisense",
+      "naumovs.color-highlight",
+      "streetsidesoftware.code-spell-checker-spanish"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Servidor Node.js",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server/src/server.js",
+        "envFile": "${workspaceFolder}/server/.env",
+        "restart": true,
+        "runtimeExecutable": "nodemon",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Iniciar proyecto completo",
+        "type": "shell",
+        "command": "npm run dev",
+        "group": { "kind": "build", "isDefault": true },
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Instalar todas las dependencias",
+        "type": "shell",
+        "command": "npm run install-all",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Crear cuenta de administrador",
+        "type": "shell",
+        "command": "npm run seed",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Generar catálogo Excel de ejemplo",
+        "type": "shell",
+        "command": "npm run seed:catalog",
+        "presentation": { "reveal": "always", "panel": "new" }
+      }
+    ]
+  }
+}

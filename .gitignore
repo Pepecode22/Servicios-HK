@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (nunca subir las reales, solo los .env.example)
+.env
+.env.local
+.env.development
+.env.production
+
+# Builds
+dist/
+build/
+client/build/
+
+# Archivos de datos generados en runtime (no versionar)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+
+# Cobertura de tests
+coverage/

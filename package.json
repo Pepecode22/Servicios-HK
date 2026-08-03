@@ -1,0 +1,18 @@
+{
+  "name": "servicios-hk",
+  "version": "1.0.0",
+  "description": "Plataforma e-commerce para Servicios HK - EPP, Aseo e Industrial",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd client && npm start",
+    "server": "cd server && npm run dev",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build": "cd client && npm run build",
+    "seed": "cd server && npm run seed",
+    "seed:catalog": "cd server && npm run seed:catalog"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
