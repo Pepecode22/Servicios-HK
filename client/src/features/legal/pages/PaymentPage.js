@@ -3,13 +3,17 @@ import LegalLayout from './LegalLayout';
 
 const PaymentPage = () => (
   <LegalLayout title="Métodos de pago">
-    <p>Este documento establece las condiciones aplicables a los servicios prestados por Servicios HK.</p>
-    <h2>Alcance</h2>
-    <p>El uso de este sitio web y la solicitud de cotizaciones implica la aceptación de las presentes condiciones. Servicios HK se reserva el derecho de modificar estos términos en cualquier momento.</p>
-    <h2>Responsabilidades</h2>
-    <p>Servicios HK se compromete a proporcionar información veraz y actualizada sobre sus productos y servicios. Los precios y disponibilidad están sujetos a confirmación al momento de la cotización.</p>
-    <h2>Contacto</h2>
-    <p>Para consultas relacionadas con este documento, comuníquese con nosotros a través de nuestro formulario de contacto o al teléfono +56 9 1234 5678.</p>
+    <h2>MÉTODOS DE PAGO ACEPTADOS</h2>
+    <p>
+      En Servicios HK facilitamos el proceso de adquisición para personas y empresas ofreciendo diversas alternativas de pago para concretar sus pedidos:
+    </p>
+
+    <ul>
+      <li><strong>Transferencia Bancaria Electrónica:</strong> Pago directo a nuestra Cuenta Corriente institucional. Es el método recomendado para agilizar la preparación y despacho de pedidos B2B y cotizaciones de volumen.</li>
+      <li><strong>Tarjetas de Débito y Crédito:</strong> Aceptadas presencialmente en tienda o mediante links de pago seguros (Webpay / Pasarela de pago habilitada).</li>
+      <li><strong>Efectivo:</strong> Aceptado directamente para compras o retirados presenciales en tienda/bodega.</li>
+      <li><strong>Cheques:</strong> Sujetos a evaluación comercial previa, verificación de fondos y confirmación por parte del departamento de finanzas de Servicios HK antes de la entrega o despacho de la mercadería.</li>
+    </ul>
   </LegalLayout>
 );
 
