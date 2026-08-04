@@ -114,14 +114,14 @@
 .navbar__admin-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1rem;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
   margin-left: 0.75rem;
   background: var(--hk-orange);
   color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 6px;
+  border-radius: 999px;
   transition: var(--transition);
   text-decoration: none;
 }
