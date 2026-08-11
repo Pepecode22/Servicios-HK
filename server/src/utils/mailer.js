@@ -1,48 +1,52 @@
-const nodemailer = require("nodemailer");
-
-let transporter = null;
-
-const isEmailConfigured = () =>
-  Boolean(process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
-
-const getTransporter = () => {
-  if (transporter) return transporter;
-
-  if (!isEmailConfigured()) return null;
-
-  transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT) || 587,
-    secure: Number(process.env.EMAIL_PORT) === 465, // true solo para el puerto 465 (SSL)
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  return transporter;
-};
+const axios = require("axios");
 
 /**
- * Envía un correo. Lanza un error si EMAIL_HOST / EMAIL_USER / EMAIL_PASSWORD
- * no están configurados en server/.env — quien llama debe capturar el error
- * y responder algo claro al usuario (ver quotes.controller / contact.controller).
+ * Envía correos a través de la API HTTP de Resend (https://resend.com), no
+ * por SMTP tradicional. Esto es intencional: hosts gratuitos como Render
+ * bloquean el tráfico saliente en los puertos SMTP (25, 465, 587), pero una
+ * llamada HTTPS normal (puerto 443) nunca se bloquea — así que enviar por
+ * API en vez de SMTP evita ese problema por completo.
+ *
+ * Requiere dos variables en server/.env:
+ *   RESEND_API_KEY — la API key de tu cuenta de Resend
+ *   EMAIL_FROM     — remitente verificado, ej. "Servicios HK <contacto@servicioshk.cl>"
+ */
+
+const isEmailConfigured = () => Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+
+/**
+ * Envía un correo. Lanza un error si RESEND_API_KEY / EMAIL_FROM no están
+ * configurados, o si Resend rechaza el envío — quien llama debe capturar el
+ * error y responder algo claro (ver quotes.controller / contact.controller).
  */
 const sendMail = async ({ to, subject, html }) => {
-  const client = getTransporter();
-
-  if (!client) {
+  if (!isEmailConfigured()) {
     throw new Error(
-      "El envío de correos no está configurado. Define EMAIL_HOST, EMAIL_USER y EMAIL_PASSWORD en server/.env."
+      "El envío de correos no está configurado. Define RESEND_API_KEY y EMAIL_FROM en server/.env."
     );
   }
 
-  await client.sendMail({
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-    to,
-    subject,
-    html,
-  });
+  try {
+    await axios.post(
+      "https://api.resend.com/emails",
+      {
+        from: process.env.EMAIL_FROM,
+        to,
+        subject,
+        html,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 15000,
+      }
+    );
+  } catch (err) {
+    const detail = err.response?.data?.message || err.message;
+    throw new Error(`Error al enviar el correo vía Resend: ${detail}`);
+  }
 };
 
 module.exports = { sendMail, isEmailConfigured };

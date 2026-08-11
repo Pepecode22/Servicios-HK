@@ -99,7 +99,7 @@ carpeta bajo `src/modules/<nombre>/` con dos archivos: `<nombre>.routes.js`
 | Autenticación admin| JWT propio (bcrypt + jsonwebtoken), respaldado en tabla `admin_users` de Supabase |
 | Catálogo           | Excel (`xlsx`) subido desde el panel admin, guardado en **Supabase Storage** (no en base de datos relacional, ni en disco local) |
 | CAPTCHA            | hCaptcha (formulario de contacto)                             |
-| Correo saliente    | Nodemailer (botón "Enviar por correo" en cotizaciones y mensajes) |
+| Correo saliente    | API de Resend, no SMTP (los hosts gratuitos como Render bloquean los puertos SMTP tradicionales) |
 | Subida de archivos | Multer, en memoria (el Excel del catálogo se sube directo a Supabase Storage, nunca toca el disco del servidor) |
 
 > El catálogo de productos se guarda como un archivo Excel (no como filas en
