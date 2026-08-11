@@ -26,6 +26,9 @@ const IconKey = () => (
 const IconUpload = () => (
   <svg {...ICON_PROPS} width="16" height="16"><path d="M12 16V4M7 9l5-5 5 5" /><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3" /></svg>
 );
+const IconDownload = () => (
+  <svg {...ICON_PROPS} width="16" height="16"><path d="M12 4v12M7 11l5 5 5-5" /><path d="M4 20h16" /></svg>
+);
 const IconArrowLeft = () => (
   <svg {...ICON_PROPS} width="16" height="16"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
 );
@@ -194,6 +197,31 @@ const AdminCatalog = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await api.get('/admin/download-catalog', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'catalogo.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      // Con responseType: 'blob', un error también llega como Blob (no
+      // JSON directo) — hay que leerlo como texto para mostrar el mensaje real.
+      let message = 'Error al descargar el catálogo.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await err.response.data.text());
+          message = parsed.message || message;
+        } catch { /* usa el mensaje genérico */ }
+      }
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="admin-section">
       <h2 className="admin-section__title">Catálogo de productos</h2>
@@ -202,10 +230,15 @@ const AdminCatalog = () => {
           <p className="admin-catalog__upload-title">Actualizar catálogo Excel</p>
           <p className="admin-catalog__upload-desc">Sube un archivo .xlsx con las columnas: Nombre, Marca, Descripción, Categoría, Código, Imagen. El orden de las columnas no es estricto (se identifican por el nombre del encabezado), pero deben estar presentes. Los productos se actualizan inmediatamente.</p>
         </div>
-        <label className="admin-catalog__upload-btn">
-          {uploading ? 'Procesando...' : <><IconUpload /> Subir Excel</>}
-          <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleUpload} disabled={uploading} style={{ display: 'none' }} />
-        </label>
+        <div className="admin-catalog__upload-actions">
+          <button type="button" className="admin-catalog__download-btn" onClick={handleDownload}>
+            <IconDownload /> Descargar Excel
+          </button>
+          <label className="admin-catalog__upload-btn">
+            {uploading ? 'Procesando...' : <><IconUpload /> Subir Excel</>}
+            <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleUpload} disabled={uploading} style={{ display: 'none' }} />
+          </label>
+        </div>
       </div>
 
       <p className="admin-catalog__count">{products.length} productos en el catálogo</p>

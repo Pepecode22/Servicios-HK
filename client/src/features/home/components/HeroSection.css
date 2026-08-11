@@ -2,6 +2,7 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
+  min-height: 100svh; /* evita saltos de layout en móviles al ocultarse la barra de direcciones */
   display: flex;
   align-items: center;
   justify-content: center;

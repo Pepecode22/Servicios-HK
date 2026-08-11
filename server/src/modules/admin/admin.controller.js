@@ -1,4 +1,4 @@
-const { readCatalog, saveCatalog } = require("../../utils/catalogStorage");
+const { readCatalog, saveCatalog, downloadCatalogFile } = require("../../utils/catalogStorage");
 const { supabase } = require("../../config/supabaseClient");
 
 // @desc  Subir nuevo catálogo Excel (se guarda en Supabase Storage)
@@ -21,6 +21,24 @@ const uploadCatalog = async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// @desc  Descargar el archivo Excel del catálogo tal como se subió
+// @route GET /api/admin/download-catalog
+const downloadCatalog = async (req, res) => {
+  try {
+    const buffer = await downloadCatalogFile();
+
+    if (!buffer) {
+      return res.status(404).json({ success: false, message: "Todavía no se ha subido ningún catálogo." });
+    }
+
+    res.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.set("Content-Disposition", 'attachment; filename="catalogo.xlsx"');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -68,4 +86,4 @@ const getProductsPreview = async (req, res) => {
   }
 };
 
-module.exports = { uploadCatalog, getStats, getProductsPreview };
+module.exports = { uploadCatalog, downloadCatalog, getStats, getProductsPreview };

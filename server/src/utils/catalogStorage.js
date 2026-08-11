@@ -173,4 +173,24 @@ const saveCatalog = async (buffer) => {
   return products;
 };
 
-module.exports = { readCatalog, saveCatalog, parseWorkbookBuffer, ensureBucketExists };
+/**
+ * Descarga el archivo Excel original (los bytes tal cual, no el JSON
+ * parseado) desde Supabase Storage. Se usa para el botón "Descargar Excel"
+ * del panel admin. Retorna null si todavía no se ha subido ningún catálogo.
+ */
+const downloadCatalogFile = async () => {
+  if (!supabase) {
+    throw new Error("Supabase no está configurado. Define SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en server/.env.");
+  }
+
+  const { data, error } = await supabase.storage.from(BUCKET_NAME).download(FILE_PATH);
+
+  if (error) {
+    if (/not.?found/i.test(error.message)) return null;
+    throw new Error(`Error al descargar el catálogo desde Supabase Storage: ${error.message}`);
+  }
+
+  return Buffer.from(await data.arrayBuffer());
+};
+
+module.exports = { readCatalog, saveCatalog, downloadCatalogFile, parseWorkbookBuffer, ensureBucketExists };

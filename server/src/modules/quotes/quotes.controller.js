@@ -26,6 +26,45 @@ const mapQuoteRow = (row) => ({
   updatedAt: row.updated_at,
 });
 
+// Construye el HTML del correo a partir de una cotización. Se usa tanto
+// para el envío automático (al recibirse la cotización) como para el botón
+// manual "Enviar por correo" del panel admin.
+const buildQuoteEmailHtml = (quote) => {
+  const filasProductos = quote.productos
+    .map(
+      (p) =>
+        `<tr>
+          <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.codigo || "-"}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.nombre}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.categoria || "-"}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;text-align:center;">${p.cantidad}</td>
+        </tr>`
+    )
+    .join("");
+
+  return `
+    <div style="font-family:Arial,sans-serif;color:#1C1C1E;max-width:600px;">
+      <h2 style="color:#E8630A;">Cotización ${quote.numeroCotizacion}</h2>
+      <p><strong>Empresa:</strong> ${quote.razonSocial} (${quote.rutEmpresa})</p>
+      <p><strong>Contacto:</strong> ${quote.nombreContacto} — ${quote.telefonoContacto} — ${quote.email}</p>
+      <p><strong>Dirección:</strong> ${quote.direccion}, ${quote.comuna}, ${quote.provincia}, ${quote.region}</p>
+      ${quote.instrucciones ? `<p><strong>Instrucciones:</strong> ${quote.instrucciones}</p>` : ""}
+      <table style="border-collapse:collapse;width:100%;margin-top:12px;">
+        <thead>
+          <tr style="background:#F5F5F5;">
+            <th style="padding:6px 10px;text-align:left;">Código</th>
+            <th style="padding:6px 10px;text-align:left;">Producto</th>
+            <th style="padding:6px 10px;text-align:left;">Categoría</th>
+            <th style="padding:6px 10px;text-align:center;">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>${filasProductos}</tbody>
+      </table>
+      <p style="margin-top:16px;color:#636366;font-size:13px;">Estado actual: ${quote.estado}</p>
+    </div>
+  `;
+};
+
 // @desc  Crear nueva cotización
 // @route POST /api/quotes
 const createQuote = async (req, res) => {
@@ -69,6 +108,23 @@ const createQuote = async (req, res) => {
       .single();
 
     if (error) throw error;
+
+    // Envío automático al correo de notificaciones (ej. contacto@servicioshk.cl).
+    // "Best effort": si falla, la cotización ya quedó guardada y visible en
+    // el panel admin igualmente — no se bloquea ni se le muestra un error
+    // al cliente que la envió.
+    if (process.env.NOTIFICATION_EMAIL) {
+      try {
+        const quote = mapQuoteRow(data);
+        await sendMail({
+          to: process.env.NOTIFICATION_EMAIL,
+          subject: `Nueva cotización ${quote.numeroCotizacion} — ${quote.razonSocial}`,
+          html: buildQuoteEmailHtml(quote),
+        });
+      } catch (mailErr) {
+        console.error("No se pudo enviar la notificación automática de cotización:", mailErr.message);
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -199,44 +255,10 @@ const emailQuote = async (req, res) => {
 
     const quote = mapQuoteRow(data);
 
-    const filasProductos = quote.productos
-      .map(
-        (p) =>
-          `<tr>
-            <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.codigo || "-"}</td>
-            <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.nombre}</td>
-            <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;">${p.categoria || "-"}</td>
-            <td style="padding:6px 10px;border-bottom:1px solid #e5e5ea;text-align:center;">${p.cantidad}</td>
-          </tr>`
-      )
-      .join("");
-
-    const html = `
-      <div style="font-family:Arial,sans-serif;color:#1C1C1E;max-width:600px;">
-        <h2 style="color:#E8630A;">Cotización ${quote.numeroCotizacion}</h2>
-        <p><strong>Empresa:</strong> ${quote.razonSocial} (${quote.rutEmpresa})</p>
-        <p><strong>Contacto:</strong> ${quote.nombreContacto} — ${quote.telefonoContacto} — ${quote.email}</p>
-        <p><strong>Dirección:</strong> ${quote.direccion}, ${quote.comuna}, ${quote.provincia}, ${quote.region}</p>
-        ${quote.instrucciones ? `<p><strong>Instrucciones:</strong> ${quote.instrucciones}</p>` : ""}
-        <table style="border-collapse:collapse;width:100%;margin-top:12px;">
-          <thead>
-            <tr style="background:#F5F5F5;">
-              <th style="padding:6px 10px;text-align:left;">Código</th>
-              <th style="padding:6px 10px;text-align:left;">Producto</th>
-              <th style="padding:6px 10px;text-align:left;">Categoría</th>
-              <th style="padding:6px 10px;text-align:center;">Cantidad</th>
-            </tr>
-          </thead>
-          <tbody>${filasProductos}</tbody>
-        </table>
-        <p style="margin-top:16px;color:#636366;font-size:13px;">Estado actual: ${quote.estado}</p>
-      </div>
-    `;
-
     await sendMail({
       to: email,
       subject: `Cotización ${quote.numeroCotizacion} — ${quote.razonSocial}`,
-      html,
+      html: buildQuoteEmailHtml(quote),
     });
 
     res.json({ success: true, message: `Cotización enviada a ${email}.` });

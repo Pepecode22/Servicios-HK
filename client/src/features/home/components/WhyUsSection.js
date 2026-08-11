@@ -48,7 +48,7 @@ const WhyUsSection = () => {
           <p className="why-us__eyebrow">¿Por qué elegirnos?</p>
           <h2 id="why-us-title" className="section-title">Somos más que un proveedor</h2>
           <p className="section-subtitle why-us__subtitle">
-            Más de 10 años de experiencia en el mercado industrial chileno respaldan nuestro compromiso.
+            Más de 38 años de experiencia en el mercado industrial chileno respaldan nuestro compromiso.
           </p>
         </div>
 

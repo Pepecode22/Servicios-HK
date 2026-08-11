@@ -198,6 +198,7 @@
 /* Éxito */
 .quote-success {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,4 +248,21 @@
 @media (max-width: 480px) {
   .quote-form__grid { grid-template-columns: 1fr; }
   .quote-form__full { grid-column: 1; }
+
+  /* En pantallas muy angostas, el nombre del producto queda demasiado
+     cortado si se mantiene en la misma fila que los controles de
+     cantidad. Se apila verticalmente para dar más espacio al texto. */
+  .quote-item {
+    flex-wrap: wrap;
+  }
+  .quote-item__info {
+    flex-basis: 100%;
+  }
+  .quote-item__name {
+    white-space: normal;
+  }
+  .quote-item__controls {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

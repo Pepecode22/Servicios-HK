@@ -17,6 +17,20 @@ const mapContactRow = (row) => ({
   createdAt: row.created_at,
 });
 
+// Construye el HTML del correo a partir de un mensaje de contacto. Se usa
+// tanto para el envío automático (al recibirse el mensaje) como para el
+// botón manual "Enviar por correo" del panel admin.
+const buildContactEmailHtml = (contact) => `
+  <div style="font-family:Arial,sans-serif;color:#1C1C1E;max-width:600px;">
+    <h2 style="color:#E8630A;">Mensaje de contacto</h2>
+    <p><strong>Nombre:</strong> ${contact.nombre}</p>
+    <p><strong>Email:</strong> ${contact.email}</p>
+    ${contact.telefono ? `<p><strong>Teléfono:</strong> ${contact.telefono}</p>` : ""}
+    <p><strong>Asunto:</strong> ${contact.asunto}</p>
+    <p style="margin-top:12px;padding:12px;background:#F5F5F5;border-radius:6px;">${contact.mensaje}</p>
+  </div>
+`;
+
 // @desc  Enviar mensaje de contacto (con verificación hCaptcha)
 // @route POST /api/contact
 const sendContact = async (req, res) => {
@@ -60,6 +74,23 @@ const sendContact = async (req, res) => {
       .single();
 
     if (error) throw error;
+
+    // Envío automático al correo de notificaciones (ej. contacto@servicioshk.cl).
+    // Se hace "best effort": si falla (por ejemplo, EMAIL_* no configurado
+    // aún, o un corte temporal del proveedor de correo), el mensaje ya
+    // quedó guardado y visible en el panel admin de todas formas — no se
+    // bloquea ni se le muestra un error al cliente que llenó el formulario.
+    if (process.env.NOTIFICATION_EMAIL) {
+      try {
+        await sendMail({
+          to: process.env.NOTIFICATION_EMAIL,
+          subject: `Nuevo mensaje de contacto — ${asunto}`,
+          html: buildContactEmailHtml(mapContactRow(data)),
+        });
+      } catch (mailErr) {
+        console.error("No se pudo enviar la notificación automática de contacto:", mailErr.message);
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -159,21 +190,10 @@ const emailContact = async (req, res) => {
 
     const contact = mapContactRow(data);
 
-    const html = `
-      <div style="font-family:Arial,sans-serif;color:#1C1C1E;max-width:600px;">
-        <h2 style="color:#E8630A;">Mensaje de contacto</h2>
-        <p><strong>Nombre:</strong> ${contact.nombre}</p>
-        <p><strong>Email:</strong> ${contact.email}</p>
-        ${contact.telefono ? `<p><strong>Teléfono:</strong> ${contact.telefono}</p>` : ""}
-        <p><strong>Asunto:</strong> ${contact.asunto}</p>
-        <p style="margin-top:12px;padding:12px;background:#F5F5F5;border-radius:6px;">${contact.mensaje}</p>
-      </div>
-    `;
-
     await sendMail({
       to: email,
       subject: `Mensaje de contacto — ${contact.asunto}`,
-      html,
+      html: buildContactEmailHtml(contact),
     });
 
     res.json({ success: true, message: `Mensaje enviado a ${email}.` });

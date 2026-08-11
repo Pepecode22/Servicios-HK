@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const router = express.Router();
-const { uploadCatalog, getStats, getProductsPreview } = require("./admin.controller");
+const { uploadCatalog, downloadCatalog, getStats, getProductsPreview } = require("./admin.controller");
 const { protect } = require("../../middleware/auth.middleware");
 
 // El archivo se recibe en memoria (no se escribe a disco): desde aquí se
@@ -28,6 +28,7 @@ router.use(protect); // Todas las rutas de administración requieren autenticaci
 
 router.get("/stats", getStats);
 router.get("/products-preview", getProductsPreview);
+router.get("/download-catalog", downloadCatalog);
 router.post("/upload-catalog", upload.single("catalog"), uploadCatalog);
 
 module.exports = router;
