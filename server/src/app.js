@@ -11,6 +11,15 @@ const adminRoutes = require("./modules/admin/admin.routes");
 
 const app = express();
 
+// Render (y la mayoría de los hosts en la nube) ponen el servidor detrás de
+// un único proxy inverso, que agrega el header X-Forwarded-For con la IP
+// real del visitante. Sin esto, Express ignora ese header por defecto, y
+// el limitador de intentos (express-rate-limit) no puede identificar
+// visitantes individuales correctamente — además de generar advertencias
+// en los logs. El valor "1" le dice a Express que confíe en exactamente
+// un salto de proxy por delante (el de Render), ni más ni menos.
+app.set("trust proxy", 1);
+
 // Middleware de seguridad
 app.use(
   helmet({
