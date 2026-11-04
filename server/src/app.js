@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const path = require("path");
+const { supabase } = require("./config/supabaseClient");
 
 const authRoutes = require("./modules/auth/auth.routes");
 const productRoutes = require("./modules/products/products.routes");
@@ -49,13 +50,31 @@ app.use("/api/quotes", quoteRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Salud del servidor
-app.get("/api/health", (req, res) => {
+// Salud del servidor. También sirve como "keep-alive": cada vez que se
+// consulta, escribe en la tabla `heartbeat` de Supabase — una escritura
+// real (no solo una lectura) para evitar que el proyecto se pause tras 7
+// días sin actividad en el plan gratuito. Ver .github/workflows/keep-alive.yml,
+// que llama a este endpoint automáticamente cada pocos días.
+app.get("/api/health", async (req, res) => {
+  const databaseConfigured = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  let heartbeat = "skipped";
+
+  if (databaseConfigured && supabase) {
+    try {
+      const { error } = await supabase
+        .from("heartbeat")
+        .upsert({ id: 1, pinged_at: new Date().toISOString() });
+      heartbeat = error ? `error: ${error.message}` : "ok";
+    } catch (err) {
+      heartbeat = `error: ${err.message}`;
+    }
+  }
+
   res.json({
     status: "OK",
     message: "Servicios HK API running",
-    database:
-      process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? "configured" : "not-configured",
+    database: databaseConfigured ? "configured" : "not-configured",
+    heartbeat,
   });
 });
 

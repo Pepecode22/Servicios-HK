@@ -9,8 +9,19 @@ const normalizeText = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-// @desc  Listar productos del catálogo, con filtros opcionales
-// @route GET /api/products
+// Paginación del catálogo: por defecto 20 productos por página, con un
+// máximo de 100 para que nadie pueda pedir el catálogo completo de una vez
+// (el objetivo es justamente no cargar todo de una tirada).
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+const parsePositiveInt = (value, fallback) => {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
+};
+
+// @desc  Listar productos del catálogo, con filtros opcionales y paginación
+// @route GET /api/products?page=1&limit=20&categoria=&marca=&search=
 const getProducts = async (req, res) => {
   try {
     const { categoria, marca, search } = req.query;
@@ -31,10 +42,24 @@ const getProducts = async (req, res) => {
     const categorias = [...new Set(allProducts.map((p) => p.categoria))].filter(Boolean);
     const marcas = [...new Set(allProducts.map((p) => p.marca))].filter(Boolean);
 
+    // Los filtros (categorías y marcas) se calculan sobre TODO el catálogo,
+    // no sobre la página actual, para que las listas desplegables siempre
+    // muestren todas las opciones disponibles.
+    const total = products.length;
+    const limit = Math.min(Math.max(parsePositiveInt(req.query.limit, DEFAULT_LIMIT), 1), MAX_LIMIT);
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    // Si piden una página que no existe (ej. después de aplicar un filtro
+    // que deja menos resultados), se entrega la última página válida.
+    const page = Math.min(Math.max(parsePositiveInt(req.query.page, 1), 1), totalPages);
+    const start = (page - 1) * limit;
+
     res.json({
       success: true,
-      count: products.length,
-      products,
+      count: total,
+      page,
+      limit,
+      totalPages,
+      products: products.slice(start, start + limit),
       filters: { categorias, marcas },
     });
   } catch (err) {

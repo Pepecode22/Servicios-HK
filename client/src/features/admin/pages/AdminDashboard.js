@@ -579,6 +579,13 @@ const AdminAccount = () => {
 
 /* ── MAIN DASHBOARD ── */
 const AdminDashboard = () => {
+  useEffect(() => {
+    const tag = document.createElement('meta');
+    tag.name = 'robots'; tag.content = 'noindex, nofollow';
+    document.head.appendChild(tag);
+    return () => { document.head.removeChild(tag); };
+  }, []);
+
   const { logout } = useAuth();
   const navigate = useNavigate();
 

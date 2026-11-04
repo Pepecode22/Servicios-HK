@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
 import './AdminLoginPage.css';
@@ -21,6 +21,15 @@ const AdminLoginPage = () => {
       setError(result?.message || 'Credenciales incorrectas');
     }
   };
+
+
+  // El panel admin no debe aparecer en buscadores
+  useEffect(() => {
+    const tag = document.createElement('meta');
+    tag.name = 'robots'; tag.content = 'noindex, nofollow';
+    document.head.appendChild(tag);
+    return () => { document.head.removeChild(tag); };
+  }, []);
 
   return (
     <div className="admin-login">

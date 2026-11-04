@@ -1,26 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#E8630A" />
-    <meta name="description" content="Servicios HK - Equipamiento de Protección Personal, Artículos de Aseo e Industrial. La Calera, V Región, Chile." />
-    <meta name="keywords" content="EPP, equipamiento protección personal, artículos aseo, industrial, La Calera, Chile" />
-    <meta property="og:title" content="Servicios HK - EPP e Industrial" />
-    <meta property="og:description" content="Proveedor de EPP, artículos de aseo e industriales en La Calera, V Región." />
+
+    <!-- ── SEO base ─────────────────────────────────────────────────────── -->
+    <title>Servicios HK — EPP, Aseo e Industrial | La Calera, Chile</title>
+    <meta
+      name="description"
+      content="Proveedor de Equipos de Protección Personal (EPP), artículos de aseo e industrial en La Calera, V Región. Cotiza en línea sin compromiso, sin crear cuenta."
+    />
+    <meta
+      name="keywords"
+      content="EPP Chile, equipos protección personal La Calera, artículos aseo industrial, cotización EPP online, Servicios HK, casco seguridad, guantes nitrilo, extintor Chile"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Servicios HK" />
+    <link rel="canonical" href="https://www.servicioshk.cl/" />
+
+    <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp) ────────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.servicioshk.cl/" />
+    <meta property="og:site_name" content="Servicios HK" />
+    <meta property="og:title" content="Servicios HK — EPP, Aseo e Industrial" />
+    <meta
+      property="og:description"
+      content="Proveedor de EPP, artículos de aseo e industrial en La Calera, V Región. Cotiza en línea, sin crear cuenta."
+    />
+    <meta
+      property="og:image"
+      content="https://www.servicioshk.cl/og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_CL" />
+
+    <!-- ── Twitter / X Card ─────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Servicios HK — EPP, Aseo e Industrial"
+    />
+    <meta
+      name="twitter:description"
+      content="Proveedor de EPP, artículos de aseo e industrial en La Calera, V Región. Cotiza en línea sin compromiso."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.servicioshk.cl/og-image.png"
+    />
+
+    <!-- ── Schema.org (JSON‑LD) — negocio local ─────────────────────────── -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Servicios HK",
+        "description": "Proveedor de Equipos de Protección Personal (EPP), artículos de aseo e industrial.",
+        "url": "https://www.servicioshk.cl",
+        "logo": "https://www.servicioshk.cl/LogoHK.svg",
+        "image": "https://www.servicioshk.cl/og-image.png",
+        "telephone": "+56-9-92560031",
+        "email": "contacto@servicioshk.cl",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Lord Cochrane 329 C",
+          "addressLocality": "La Calera",
+          "addressRegion": "Región de Valparaíso",
+          "postalCode": "1710000",
+          "addressCountry": "CL"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "-32.7900",
+          "longitude": "-71.2019"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
+        ],
+        "areaServed": {
+          "@type": "State",
+          "name": "Región de Valparaíso"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Catálogo EPP e Industrial",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Equipos de Protección Personal (EPP)"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Artículos de Aseo Industrial"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Productos Industriales"
+              }
+            }
+          ]
+        },
+        "sameAs": []
+      }
+    </script>
+
+    <!-- ── Favicons ──────────────────────────────────────────────────────── -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <!-- Google Fonts -->
+
+    <!-- ── Leaflet CSS ───────────────────────────────────────────────────── -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <!-- ── Google Fonts ──────────────────────────────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet" />
-    <title>Servicios HK</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+    <noscript
+      >Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript
+    >
     <div id="root"></div>
   </body>
 </html>

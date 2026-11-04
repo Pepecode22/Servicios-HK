@@ -111,6 +111,27 @@ create index if not exists idx_contact_messages_leido on contact_messages (leido
 create index if not exists idx_contact_messages_created_at on contact_messages (created_at desc);
 
 -- -----------------------------------------------------------------------------
+-- Tabla: heartbeat
+-- Una única fila que se sobrescribe cada vez que /api/health se consulta.
+-- Su único propósito es generar una escritura real en la base de datos —
+-- Supabase pausa los proyectos del plan gratuito tras 7 días sin actividad,
+-- y una simple lectura no siempre cuenta de forma confiable; una escritura
+-- (INSERT/UPDATE) sí. No almacena información de negocio, no crece con el
+-- tiempo (siempre 1 fila) y no requiere mantenimiento.
+-- -----------------------------------------------------------------------------
+create table if not exists heartbeat (
+  id         smallint primary key default 1,
+  pinged_at  timestamptz not null default now(),
+  constraint heartbeat_single_row check (id = 1)
+);
+
+insert into heartbeat (id, pinged_at)
+values (1, now())
+on conflict (id) do nothing;
+
+alter table heartbeat enable row level security;
+
+-- -----------------------------------------------------------------------------
 -- Row Level Security (RLS)
 -- El backend accede con la "service role key", que ignora RLS. Se habilita
 -- igualmente por buenas prácticas de seguridad, dejando las tablas cerradas
