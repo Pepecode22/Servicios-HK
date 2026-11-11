@@ -1,0 +1,24 @@
+name: Keep Supabase Alive
+
+# Supabase pausa los proyectos del plan gratuito tras 7 días sin actividad
+# real (escrituras en la base de datos). Este workflow visita el endpoint
+# /api/health del backend cada 3 días — bastante seguido como para nunca
+# acercarse al límite de 7 días, incluso si alguna ejecución se retrasa o
+# se salta. El endpoint en sí (server/src/app.js) hace una escritura real
+# en Supabase cada vez que se le llama.
+#
+# No necesita ningún secreto ni configuración: solo visita una URL pública.
+
+on:
+  schedule:
+    - cron: "0 8 */3 * *" # cada 3 días a las 08:00 UTC
+  workflow_dispatch: # permite ejecutarlo manualmente desde la pestaña Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/health
+        run: |
+          # Reemplaza esta URL si tu backend cambia de dominio.
+          curl -sf "https://servicios-hk.onrender.com/api/health" || exit 1
